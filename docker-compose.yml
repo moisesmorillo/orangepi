@@ -1,0 +1,36 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:2.20.1-alpine
+    container_name: portainer
+    restart: always
+    ports:
+      - "8000:8000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:2024.03.2
+    env_file: .env
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80/tcp"
+    environment:
+      TZ: 'America/Bogota'
+      WEBPASSWORD: ${PIHOLE_WEBPASSWORD}
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+  duckdns:
+    container_name: duckdns
+    build:
+      context: .
+      dockerfile: duckdns.Dockerfile
+    env_file: .env
+volumes:
+  portainer_data:
