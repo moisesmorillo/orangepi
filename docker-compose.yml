@@ -31,6 +31,31 @@ services:
     build:
       context: .
       dockerfile: duckdns.Dockerfile
+      args:
+        DUCKDNS_TOKEN: ${DUCKDNS_TOKEN}
     env_file: .env
+  speedtest-tracker:
+    container_name: speedtest-tracker
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    ports:
+      - "4500:80"
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - $HOME/.local/orangepi/speedtest-config:/config
+  postgres-db:
+    container_name: postgres-db
+    image: postgres:15.6-bookworm
+    env_file: .env
+    restart: always
+    volumes:
+      - $HOME/.local/orangepi/postgres-db:/var/lib/postgresql/data
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:8.5
+    ports:
+      - "5500:80"
+    env_file: .env
+    restart: always
 volumes:
   portainer_data:
