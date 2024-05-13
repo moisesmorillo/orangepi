@@ -1,10 +1,10 @@
 include .env
 
 build-services:
-        docker compose up -d --no-recreate
+	docker compose up -d --no-recreate
 
 rebuild-services:
-        docker compose up -d --build
+	docker compose up -d --build
 
 stop-services:
-        docker compose down
+	docker compose down
