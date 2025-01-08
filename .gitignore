@@ -1,3 +1,4 @@
 .env
 # pi-hole folders
 etc-*
+.DS_Store
