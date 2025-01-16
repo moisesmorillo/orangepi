@@ -97,3 +97,11 @@ sudo mkfs.ext4 /dev/nvme0n1p1
   sudo hostnamectl set-hostname orangepi.local
   sudo vi /etc/hosts  # Update references to the new hostname
   ```
+
+---
+
+## Install tools and software
+
+```bash
+sh install.sh
+```
