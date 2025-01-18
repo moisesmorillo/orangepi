@@ -5,7 +5,7 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y \
   curl git vim
 
-KUBE_DIR="./kubernetes"
+KUBE_DIR="./k8s/manifests"
 
 # Install k3s
 curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --disable=traefik
