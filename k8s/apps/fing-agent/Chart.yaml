@@ -1,0 +1,7 @@
+apiVersion: v2
+name: fing-agent
+description: Fing Network Scanner
+type: application
+version: 1.0.0
+appVersion: latest
+
