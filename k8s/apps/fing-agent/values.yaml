@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: fingcli/fing-agent
+  repository: fing/fing-agent
   tag: latest
   pullPolicy: IfNotPresent
 
