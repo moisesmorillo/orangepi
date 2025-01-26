@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fing-agent
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Chart.Name }}
 spec:
@@ -19,6 +20,15 @@ spec:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+        ports:
+        - containerPort: 44444
+        volumeMounts:
+        - name: fing-data-volume
+          mountPath: /app/fingdata
         resources:
           limits:
             memory: "{{ .Values.resources.limits.memory }}"
@@ -26,8 +36,8 @@ spec:
           requests:
             memory: "{{ .Values.resources.requests.memory }}"
             cpu: "{{ .Values.resources.requests.cpu }}"
-        securityContext:
-          capabilities:
-            add:
-              - NET_ADMIN
-              - NET_RAW
+      restartPolicy: Always
+      volumes:
+      - name: fing-data-volume
+        persistentVolumeClaim:
+          claimName: fing-data-pvc
