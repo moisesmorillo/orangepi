@@ -4,6 +4,7 @@ metadata:
   name: fing-data-pvc
   namespace: home-production
 spec:
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
