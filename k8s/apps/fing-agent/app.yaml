@@ -16,18 +16,19 @@ spec:
       hostNetwork: true
       containers:
         - name: fing-agent
-          image: fingcli/fing-agent:v1.1.1
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 44444
-          securityContext:
-            capabilities:
-              add: ["NET_ADMIN"]
+          image: fingcli/fing-agent:1.1.1
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
           volumeMounts:
-            - name: fing-data-volume
-              mountPath: /app/fingdata
+            - mountPath: /app/fingdata
+              name: fing-data
       volumes:
-        - name: fing-data-volume
+        - name: fing-data
           persistentVolumeClaim:
             claimName: fing-data-pvc
-      restartPolicy: Always
