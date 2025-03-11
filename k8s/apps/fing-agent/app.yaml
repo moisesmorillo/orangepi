@@ -16,7 +16,7 @@ spec:
       hostNetwork: true
       containers:
         - name: fing-agent
-          image: fingcli/fing-agent:1.1.1
+          image: fing/fing-agent:1.1.1
           imagePullPolicy: IfNotPresent
           resources:
             limits:
