@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fing-agent
+  namespace: home-production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fing-agent
+  template:
+    metadata:
+      labels:
+        app: fing-agent
+    spec:
+      hostNetwork: true
+      containers:
+        - name: fing-agent
+          image: fingcli/fing-agent:v1.1.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 44444
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          volumeMounts:
+            - name: fing-data-volume
+              mountPath: /app/fingdata
+      volumes:
+        - name: fing-data-volume
+          persistentVolumeClaim:
+            claimName: fing-data-pvc
+      restartPolicy: Always
