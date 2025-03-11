@@ -1,4 +1,5 @@
 extends: default
 
 ignore:
-  - '.github/workflows/*.{yml,yaml}'
+  - '.github/workflows/*.yaml'
+  - '.yamllint'
