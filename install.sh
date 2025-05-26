@@ -8,7 +8,10 @@ sudo apt install -y \
 KUBE_DIR="./k8s/core"
 
 # Install k3s
-curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --disable=traefik
+curl -sfL https://get.k3s.io | \
+  K3S_KUBECONFIG_MODE="644" \
+  INSTALL_K3S_EXEC="--disable=traefik --cluster-cidr=10.42.0.0/16 --service-cidr=10.43.0.0/16" \
+  sh -
 
 grep -qxF "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" ~/.bashrc || echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >>~/.bashrc
 
