@@ -1,16 +1,16 @@
 # Tailscale Subnet Router and Exit Node on K3s (Orange Pi)
 
-This guide walks you through deploying [Tailscale](https://tailscale.com) as a Kubernetes Operator on your K3s cluster (e.g. Orange Pi) to access your **entire home network** remotely. It includes automatic OAuth authentication, subnet routing, and optional exit node capabilities.
+This guide sets up [Tailscale](https://tailscale.com) as a Kubernetes Operator on a K3s cluster (e.g. Orange Pi), providing secure remote access to your **entire home network**. It uses OAuth credentials stored in a Kubernetes Secret and includes subnet routing and optional exit node functionality.
 
 ---
 
 ## ✅ Features
 
-- Secure remote access to devices in your home network (`192.168.1.0/24`).
-- Optional exit node support to route **all internet traffic** via home.
-- Headless OAuth authentication (no browser login needed).
-- Uses `network-services` namespace for separation of concerns.
-- Declarative deployment using Helm and Kubernetes manifests.
+- Secure remote access to devices on your home LAN (`192.168.1.0/24`).
+- Optional exit node support to route all internet traffic through your home.
+- Uses Kubernetes Secrets for credential management.
+- Isolated namespace (`network-services`) for better organization.
+- All configuration managed through declarative YAML files.
 
 ---
 
@@ -18,7 +18,7 @@ This guide walks you through deploying [Tailscale](https://tailscale.com) as a K
 
 ### 1.1 Edit ACL policy to add required tags
 
-Visit: <https://login.tailscale.com/admin/acls> and add:
+Visit: https://login.tailscale.com/admin/acls and include:
 
 ```json
 "tagOwners": {
@@ -29,76 +29,84 @@ Visit: <https://login.tailscale.com/admin/acls> and add:
 
 ### 1.2 Create an OAuth client
 
-Go to: <https://login.tailscale.com/admin/settings/oauth-clients> and create a new client with:
+Go to: https://login.tailscale.com/admin/settings/oauth-clients and create a client with:
 
 - **Scopes**:
   - `devices:core` (write)
   - `auth_keys` (write)
 - **Tags**: `tag:k8s-operator`
 
-Save the `clientId` and `clientSecret` for use in the values file.
+Save the `client_id` and `client_secret`.
 
 ---
 
-## 2. Install Tailscale Operator using Helm
+## 2. Apply the Kubernetes Secret for OAuth
 
-Apply the existing `tailscale-values.yaml` file in this directory:
+Apply `operator-oauth-secret.yaml` to store your Tailscale credentials:
+
+```bash
+kubectl apply -f operator-oauth-secret.yaml
+```
+
+Ensure the secret has the exact key names `client_id` and `client_secret`.
+
+---
+
+## 3. Install the Tailscale Operator with Helm
+
+Use the existing `values.yaml` to set tags without including sensitive credentials:
 
 ```bash
 helm repo add tailscale https://pkgs.tailscale.com/helmcharts
 helm repo update
 
-helm install tailscale-operator tailscale/tailscale-operator \
+helm upgrade --install tailscale-operator tailscale/tailscale-operator \
   --namespace network-services \
   --create-namespace \
   -f values.yaml \
   --wait
 ```
 
+This uses the existing Secret (`operator-oauth`) and configures the operator properly.
+
 ---
 
-## 3. Deploy Connector as Subnet Router and Exit Node
+## 4. Deploy the Connector
 
-Apply the `connector.yaml` file in this directory:
+Apply the connector definition to announce your home subnet and enable exit node functionality:
 
 ```bash
 kubectl apply -f connector.yaml
 ```
 
-This connector:
-
-- Advertises the local subnet (`192.168.1.0/24`)
-- Acts as an exit node
-- Is tagged as `tag:k8s` for ACL control
+This allows Tailscale to route traffic to your LAN and optionally use it as an exit node.
 
 ---
 
-## 4. Approve Subnet Routes and Exit Node
+## 5. Approve Subnet Routes and Exit Node
 
-1. Visit: <https://login.tailscale.com/admin/machines>
-2. Locate the device `orangepi`
-3. Enable:
-   - **Subnet routes**
-   - _(Optional)_ **Exit Node**
+Go to https://login.tailscale.com/admin/machines, find your `orangepi` device, and enable:
+
+- [x] **Subnet routes** (`192.168.1.0/24`)
+- [x] **Exit node** (optional)
 
 ---
 
-## 5. Connect from your devices
+## 6. Connect from Other Devices
 
-Install Tailscale on your other devices:
+Install Tailscale on your iPad, laptop, or any other device:  
+https://tailscale.com/download
 
-- <https://tailscale.com/download>
+Once connected, you can:
 
-Once connected, you'll be able to:
-
-- SSH: `ssh user@192.168.1.10`
-- Access web UIs: `http://192.168.1.50:8123`
-- _(If exit node is used)_ Browse the internet through your home.
+- SSH: `ssh user@192.168.1.X`
+- Access Home Assistant, NAS, etc.
+- Use your home IP for all internet traffic (if using exit node)
 
 ---
 
 ## Notes
 
-- No port forwarding or public IPs required.
-- Private mesh network using WireGuard.
-- Great for Home Assistant, media servers, SSH, and more.
+- `.local` mDNS hostnames will not resolve over VPN; use IPs instead.
+- For even easier access, install Tailscale directly on destination devices and use MagicDNS.
+
