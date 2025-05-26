@@ -18,7 +18,7 @@ This guide sets up [Tailscale](https://tailscale.com) as a Kubernetes Operator o
 
 ### 1.1 Edit ACL policy to add required tags
 
-Visit: https://login.tailscale.com/admin/acls and include:
+Visit: <https://login.tailscale.com/admin/acls> and include:
 
 ```json
 "tagOwners": {
@@ -29,7 +29,7 @@ Visit: https://login.tailscale.com/admin/acls and include:
 
 ### 1.2 Create an OAuth client
 
-Go to: https://login.tailscale.com/admin/settings/oauth-clients and create a client with:
+Go to: <https://login.tailscale.com/admin/settings/oauth-clients> and create a client with:
 
 - **Scopes**:
   - `devices:core` (write)
@@ -37,12 +37,21 @@ Go to: https://login.tailscale.com/admin/settings/oauth-clients and create a cli
 - **Tags**: `tag:k8s-operator`
 
 Save the `client_id` and `client_secret`.
+You will use these values in `operator-oauth-secret.yaml` in the next step.
 
 ---
 
 ## 2. Apply the Kubernetes Secret for OAuth
 
-Apply `operator-oauth-secret.yaml` to store your Tailscale credentials:
+Edit `operator-oauth-secret.yaml` and **replace** the placeholders with the values from step 1.2:
+
+```yaml
+stringData:
+  client_id: tsclient-xxxxxxxxxxxxxxxx
+  client_secret: tsclient-secret-xxxxxxxxxxxxxxxx
+```
+
+Then apply the secret:
 
 ```bash
 kubectl apply -f operator-oauth-secret.yaml
@@ -62,7 +71,6 @@ helm repo update
 
 helm upgrade --install tailscale-operator tailscale/tailscale-operator \
   --namespace network-services \
-  --create-namespace \
   -f values.yaml \
   --wait
 ```
@@ -85,7 +93,7 @@ This allows Tailscale to route traffic to your LAN and optionally use it as an e
 
 ## 5. Approve Subnet Routes and Exit Node
 
-Go to https://login.tailscale.com/admin/machines, find your `orangepi` device, and enable:
+Go to <https://login.tailscale.com/admin/machines>, find your `orangepi` device, and enable:
 
 - [x] **Subnet routes** (`192.168.1.0/24`)
 - [x] **Exit node** (optional)
@@ -95,7 +103,7 @@ Go to https://login.tailscale.com/admin/machines, find your `orangepi` device, a
 ## 6. Connect from Other Devices
 
 Install Tailscale on your iPad, laptop, or any other device:  
-https://tailscale.com/download
+<https://tailscale.com/download>
 
 Once connected, you can:
 
@@ -109,4 +117,3 @@ Once connected, you can:
 
 - `.local` mDNS hostnames will not resolve over VPN; use IPs instead.
 - For even easier access, install Tailscale directly on destination devices and use MagicDNS.
-
