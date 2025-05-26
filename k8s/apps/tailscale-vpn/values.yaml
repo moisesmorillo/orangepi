@@ -1,14 +1,7 @@
-connector:
-  enabled: true
-  name: orangepi-subnet-router
-  hostname: orangepi
-  subnetRouter:
-    enabled: true
-    advertiseRoutes:
-      - 192.168.1.0/24 # Adjust this to match your home network
-    exitNode: true
+oauth:
+  clientId: "tsclient-xxxxxxxxxxxxxxxx"
+  clientSecret: "tsclient-secret-xxxxxxxxxxxxxxxx"
 
-auth:
-  method: clientSecret
-  clientID: "tsclient-id" # Replace with your Client ID
-  clientSecret: "tsclient-secret" # Replace with your Client Secret
+operatorConfig:
+  defaultTags:
+    - tag:k8s-operator
