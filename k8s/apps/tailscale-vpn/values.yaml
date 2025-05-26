@@ -1,9 +1,4 @@
 ---
-oauth:
-  existingSecret: tailscale-oauth
-  clientIdKey: clientId
-  clientSecretKey: clientSecret
-
 operatorConfig:
   defaultTags:
     - tag:k8s-operator
