@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: fing-data-pvc
-  namespace: home-production
+  namespace: network-services
 spec:
   storageClassName: local-path
   accessModes:
