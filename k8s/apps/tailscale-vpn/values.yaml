@@ -1,7 +1,8 @@
 ---
 oauth:
-  clientId: "tsclient-xxxxxxxxxxxxxxxx"
-  clientSecret: "tsclient-secret-xxxxxxxxxxxxxxxx"
+  existingSecret: tailscale-oauth
+  clientIdKey: clientId
+  clientSecretKey: clientSecret
 
 operatorConfig:
   defaultTags:
