@@ -20,7 +20,7 @@ LATEST_VERSION=$(curl -s https://api.github.com/repos/derailed/k9s/releases/late
 DEB_URL="https://github.com/derailed/k9s/releases/download/${LATEST_VERSION}/k9s_Linux_arm64.deb"
 
 wget "$DEB_URL" -O k9s_latest_arm64.deb
-sudo apt install ./k9s_latest_arm64.deb
+sudo apt install -y ./k9s_latest_arm64.deb
 rm ./k9s_latest_arm64.deb
 
 # Install helm
